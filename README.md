@@ -1,4 +1,4 @@
-# Model local cache
+# Laravel Translation
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/vemcogroup/laravel-translation.svg?style=flat-square)](https://packagist.org/packages/vemcogroup/laravel-translation)
 [![Total Downloads](https://img.shields.io/packagist/dt/vemcogroup/laravel-translation.svg?style=flat-square)](https://packagist.org/packages/vemcogroup/laravel-translation)
