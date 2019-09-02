@@ -1,0 +1,44 @@
+{
+    "name": "vemcogroup/laravel-translation",
+    "description": "Translation package to scan for localisations and up/download to poeditor",
+    "keywords": [
+        "i18n",
+        "laravel",
+        "poeditor",
+        "translations"
+    ],
+    "homepage": "https://github.com/vemcogroup/laravel-translation",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Henrik B Hansen",
+            "email": "hbh@vemcount.com",
+            "homepage": "https://www.vemcogroup.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.2",
+        "ext-json": "*",
+        "symfony/finder": "^4.3",
+        "guzzlehttp/guzzle": "^6.3",
+        "laravel/framework": "5.8.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Vemcogroup\\Translation\\": "src/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Vemcogroup\\Translation\\TranslationServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

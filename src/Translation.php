@@ -1,0 +1,191 @@
+<?php
+
+namespace Vemcogroup\Translation;
+
+use Exception;
+use GuzzleHttp\Client;
+use Illuminate\Support\Collection;
+use Symfony\Component\Finder\Finder;
+use GuzzleHttp\Exception\GuzzleException;
+use Symfony\Component\Finder\SplFileInfo;
+use Symfony\Component\HttpFoundation\Response;
+use GuzzleHttp\Psr7\Response as GuzzleResponse;
+use Vemcogroup\Translation\Exceptions\POEditorException;
+
+class Translation
+{
+    protected $apiKey;
+    protected $projectId;
+    protected $baseLanguage;
+    protected $baseFilename;
+
+    public function __construct()
+    {
+        $this->baseLanguage = config('translations.base_language');
+        $this->baseFilename = app()->langPath() . DIRECTORY_SEPARATOR . $this->baseLanguage . '.json';
+    }
+
+    public function scan(): int
+    {
+        $allMatches = [];
+        $finder = new Finder();
+
+        $finder->in(base_path())
+            ->exclude(['vendor', 'storage', 'public'])
+            ->name(['*.php', '*.vue'])
+            ->files();
+        /*
+         * This pattern is derived from Barryvdh\TranslationManager by Barry vd. Heuvel <barryvdh@gmail.com>
+         *
+         * https://github.com/barryvdh/laravel-translation-manager/blob/master/src/Manager.php
+         */
+        $functions = config('translations.functions', ['__']);
+        $pattern =
+            // See https://regex101.com/r/jS5fX0/5
+            '[^\w]' . // Must not start with any alphanum or _
+            '(?<!->)' . // Must not start with ->
+            '(' . implode('|', $functions) . ')' . // Must start with one of the functions
+            "\(" . // Match opening parentheses
+            "[\'\"]" . // Match " or '
+            '(' . // Start a new group to match:
+            '.+' . // Must start with group
+            ')' . // Close group
+            "[\'\"]" . // Closing quote
+            "[\),]"  // Close parentheses or new parameter
+        ;
+
+        foreach ($finder as $file) {
+            if (preg_match_all("/$pattern/siU", $file->getContents(), $matches)) {
+                $allMatches[$file->getRelativePathname()] = $matches[2];
+            }
+        }
+
+        $collapsedKeys = collect($allMatches)->collapse();
+        $keys = $collapsedKeys->combine($collapsedKeys)->sortKeys();
+
+        file_put_contents($this->baseFilename, json_encode($keys, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+
+        return $keys->count();
+    }
+
+    public function createJs(): int
+    {
+        $jsLangPath = public_path('build/lang');
+        if (!is_dir($jsLangPath) && !mkdir($jsLangPath, 0777, true)) {
+            throw POEditorException::unableToCreateJsDirectory($jsLangPath);
+        }
+
+        $translations = $this->getTranslations();
+        $translations->each(function ($content, $language) use ($jsLangPath) {
+            $content = 'window.i18n = ' . json_encode($content) . ';';
+            file_put_contents($jsLangPath . '/' . $language . '.js', $content);
+        });
+
+        return $translations->count();
+    }
+
+    public function download(): Collection
+    {
+        try {
+            $this->setupPoeditorCredentials();
+            $response = $this->query('https://api.poeditor.com/v2/languages/list', [
+                'form_params' => [
+                    'api_token' => $this->apiKey,
+                    'id' => $this->projectId
+                ]
+            ], 'POST');
+        } catch (Exception $e) {
+            throw $e;
+        }
+
+        $languages = collect($response['result']['languages']);
+        $languages->each(function ($language) {
+            $response = $this->query('https://api.poeditor.com/v2/projects/export', [
+                'form_params' => [
+                    'api_token' => $this->apiKey,
+                    'id' => $this->projectId,
+                    'language' => $language['code'],
+                    'type' => 'key_value_json'
+                ]
+            ], 'POST');
+
+            $content = collect($this->query($response['result']['url']))
+                ->map(function ($entry) {
+                    return trim($entry);
+                })->sortKeys()->toJson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+            file_put_contents(resource_path('lang/' . $language['code'] . '.json'), $content);
+        });
+
+        return $languages->pluck('code');
+    }
+
+    public function upload(): void
+    {
+        try {
+            $this->setupPoeditorCredentials();
+            $entries = $this->getFileContent()
+                ->map(function ($value, $key) {
+                    return ['term' => $key];
+                })->toJson();
+
+            $this->query('https://api.poeditor.com/v2/projects/sync', [
+                'form_params' => [
+                    'api_token' => $this->apiKey,
+                    'id' => $this->projectId,
+                    'data' => $entries,
+                ]
+            ], 'POST');
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
+    protected function setupPoeditorCredentials(): void
+    {
+        if (!$this->apiKey = config('translations.api_key')) {
+            throw POEditorException::noApiKey();
+        }
+
+        if (!$this->projectId = config('translations.project_id')) {
+            throw POEditorException::noProjectId();
+        }
+    }
+
+    protected function getFileContent(): Collection
+    {
+        return collect(json_decode(file_get_contents($this->baseFilename), true));
+    }
+
+    protected function getTranslations(): Collection
+    {
+        return collect(app(Finder::class)
+            ->in(app()->langPath())
+            ->name('*.json')
+            ->files())
+            ->mapWithKeys(function (SplFileInfo $file) {
+                return [$file->getBaseName('.json') => json_decode($file->getContents(), true)];
+            });
+    }
+
+    protected function query($url, $parameters = [], $type = 'GET'): ?array
+    {
+        try {
+            $response = app(Client::class)->request($type, $url, $parameters);
+            return $this->handleResponse($response);
+        } catch (POEditorException $e) {
+            throw POEditorException::communicationError($e->getMessage());
+        } catch (GuzzleException $e) {
+            throw POEditorException::communicationError($e->getMessage());
+        }
+    }
+
+    protected function handleResponse(GuzzleResponse $response)
+    {
+        if (!in_array($response->getStatusCode(), [Response::HTTP_OK, Response::HTTP_CREATED], true)) {
+            throw POEditorException::communicationError($response->getBody()->getContents());
+        }
+
+        return json_decode($response->getBody()->getContents(), true);
+    }
+}
