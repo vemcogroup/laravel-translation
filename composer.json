@@ -1,6 +1,6 @@
 {
     "name": "vemcogroup/laravel-translation",
-    "description": "Translation package to scan for localisations and up/download to poeditor",
+    "description": "Translation package for Laravel to scan for localisations and up/download to poeditor",
     "keywords": [
         "i18n",
         "laravel",
