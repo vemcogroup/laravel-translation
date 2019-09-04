@@ -21,7 +21,7 @@ class Translation
 
     public function __construct()
     {
-        $this->baseLanguage = config('translations.base_language');
+        $this->baseLanguage = config('translation.base_language');
         $this->baseFilename = app()->langPath() . DIRECTORY_SEPARATOR . $this->baseLanguage . '.json';
     }
 
@@ -39,7 +39,7 @@ class Translation
          *
          * https://github.com/barryvdh/laravel-translation-manager/blob/master/src/Manager.php
          */
-        $functions = config('translations.functions');
+        $functions = config('translation.functions');
         $pattern =
             // See https://regex101.com/r/jS5fX0/5
             '[^\w]' . // Must not start with any alphanum or _
@@ -146,11 +146,11 @@ class Translation
 
     protected function setupPoeditorCredentials(): void
     {
-        if (!$this->apiKey = config('translations.api_key')) {
+        if (!$this->apiKey = config('translation.api_key')) {
             throw POEditorException::noApiKey();
         }
 
-        if (!$this->projectId = config('translations.project_id')) {
+        if (!$this->projectId = config('translation.project_id')) {
             throw POEditorException::noProjectId();
         }
     }

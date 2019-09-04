@@ -13,7 +13,7 @@ class TranslationServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->publishes([
-            __DIR__ . '/../config/translations.php' => config_path('translations.php'),
+            __DIR__ . '/../config/translation.php' => config_path('translation.php'),
         ], 'config');
 
         if ($this->app->runningInConsole()) {
@@ -29,7 +29,7 @@ class TranslationServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(
-            __DIR__ . '/../config/translations.php', 'translations'
+            __DIR__ . '/../config/translation.php', 'translation'
         );
 
         $this->app->singleton(Translation::class, function () {
