@@ -39,7 +39,7 @@ class Translation
          *
          * https://github.com/barryvdh/laravel-translation-manager/blob/master/src/Manager.php
          */
-        $functions = config('translations.functions', ['__']);
+        $functions = config('translations.functions');
         $pattern =
             // See https://regex101.com/r/jS5fX0/5
             '[^\w]' . // Must not start with any alphanum or _
@@ -112,7 +112,9 @@ class Translation
             $content = collect($this->query($response['result']['url']))
                 ->map(function ($entry) {
                     return trim($entry);
-                })->sortKeys()->toJson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                })
+                ->sortKeys()
+                ->toJson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
             file_put_contents(resource_path('lang/' . $language['code'] . '.json'), $content);
         });
@@ -127,7 +129,8 @@ class Translation
             $entries = $this->getFileContent()
                 ->map(function ($value, $key) {
                     return ['term' => $key];
-                })->toJson();
+                })
+                ->toJson();
 
             $this->query('https://api.poeditor.com/v2/projects/sync', [
                 'form_params' => [
