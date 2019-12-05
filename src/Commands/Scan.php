@@ -8,7 +8,8 @@ use Vemcogroup\Translation\Translation;
 
 class Scan extends Command
 {
-    protected $signature = 'translation:scan';
+    protected $signature = 'translation:scan
+                            {--merge : Whether the job should overwrite or merge translations}';
     protected $description = 'Scan code base for translation variables';
 
     public function handle(): void
@@ -16,8 +17,9 @@ class Scan extends Command
         try {
             $this->info('Preparing to scan code base');
             $this->info('Finding all translation variables');
+            $this->info($this->option('merge') ? 'Merging keys' : 'Overwriting keys');
 
-            $variables = app(Translation::class)->scan();
+            $variables = app(Translation::class)->scan($this->option('merge'));
 
             $this->info('Finished scanning code base, found: ' . $variables . ' variables');
         } catch (Exception $e) {

@@ -25,7 +25,7 @@ class Translation
         $this->baseFilename = app()->langPath() . DIRECTORY_SEPARATOR . $this->baseLanguage . '.json';
     }
 
-    public function scan(): int
+    public function scan($mergeKeys = false): int
     {
         $allMatches = [];
         $finder = new Finder();
@@ -61,9 +61,14 @@ class Translation
         }
 
         $collapsedKeys = collect($allMatches)->collapse();
-        $keys = $collapsedKeys->combine($collapsedKeys)->sortKeys();
+        $keys = $collapsedKeys->combine($collapsedKeys);
 
-        file_put_contents($this->baseFilename, json_encode($keys, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        if($mergeKeys) {
+            $content = file_exists($this->baseFilename) ? collect(json_decode(file_get_contents($this->baseFilename)), true) : collect();
+            $keys = $content->merge($keys);
+        }
+
+        file_put_contents($this->baseFilename, json_encode($keys->sortKeys(), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 
         return $keys->count();
     }
