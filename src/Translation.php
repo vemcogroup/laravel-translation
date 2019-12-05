@@ -64,8 +64,12 @@ class Translation
         $keys = $collapsedKeys->combine($collapsedKeys);
 
         if($mergeKeys) {
-            $content = file_exists($this->baseFilename) ? collect(json_decode(file_get_contents($this->baseFilename)), true) : collect();
-            $keys = $content->merge($keys);
+            $content = $this->getFileContent();
+            $keys = $content->union(
+                $keys->filter(function($key) use ($content) {
+                    return ! $content->has($key);
+                })
+            );
         }
 
         file_put_contents($this->baseFilename, json_encode($keys->sortKeys(), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
@@ -162,7 +166,9 @@ class Translation
 
     protected function getFileContent(): Collection
     {
-        return collect(json_decode(file_get_contents($this->baseFilename), true));
+        return file_exists($this->baseFilename)
+            ? collect(json_decode(file_get_contents($this->baseFilename), true))
+            : collect();
     }
 
     protected function getTranslations(): Collection

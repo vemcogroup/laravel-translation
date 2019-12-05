@@ -90,7 +90,7 @@ You are now able to use the translation commands scan/upload/download or create-
 
 To scan your project for translations run this command:
 ```bash
-php artisan translation:scan {--merge : Whether the job should overwrite or merge translations}
+php artisan translation:scan {--merge : Whether the job should overwrite or merge new translations keys}
 ``` 
 
 The command creates your `base_language` .json file in `/resources/lang`

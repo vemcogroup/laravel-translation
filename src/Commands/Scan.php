@@ -9,7 +9,7 @@ use Vemcogroup\Translation\Translation;
 class Scan extends Command
 {
     protected $signature = 'translation:scan
-                            {--merge : Whether the job should overwrite or merge translations}';
+                            {--merge : Whether the job should overwrite or new translations keys}';
     protected $description = 'Scan code base for translation variables';
 
     public function handle(): void
