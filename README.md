@@ -116,4 +116,24 @@ To create public JS files run this command:
 php artisan translation:create-js {--download : Download language files before creating js}
 ``` 
 
-You are now able to access all your languages as `window.i18n` from `/public/lang`
+You are now able to access all your languages as `window.i18n` from `/public/lang` when you include the .js file
+
+````html
+<script src="/build/lang/en.js"></script>
+````
+
+**System translations**
+
+If you want to translate system translations change the terms in eg `/resources/lang/en/auth.php` 
+
+From:
+```php
+'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
+``` 
+
+To
+```php
+'throttle' => __('Too many login attempts. Please try again in :seconds seconds.'),
+``` 
+
+Then it will be scanned and included in the synced terms.
