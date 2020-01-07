@@ -32,7 +32,7 @@ class Translation
 
         $finder->in(base_path())
             ->exclude(['vendor', 'storage', 'public'])
-            ->name(['*.php', '*.vue'])
+            ->name(config('translation.extensions'))
             ->files();
         /*
          * This pattern is derived from Barryvdh\TranslationManager by Barry vd. Heuvel <barryvdh@gmail.com>
