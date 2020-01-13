@@ -31,7 +31,7 @@ class Translation
         $finder = new Finder();
 
         $finder->in(base_path())
-            ->exclude(['vendor', 'storage', 'public'])
+            ->exclude(config('translation.excluded_directories'))
             ->name(config('translation.extensions'))
             ->files();
         /*

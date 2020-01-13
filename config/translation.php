@@ -26,6 +26,17 @@ return [
 
     'functions' => ['__'],
 
+	/*
+	|--------------------------------------------------------------------------
+	| Excluded directories
+	|--------------------------------------------------------------------------
+	|
+	| Here you define which directories are excluded from scan.
+	|
+	*/
+
+	'excluded_directories' => ['vendor', 'storage', 'public'],
+
     /*
     |--------------------------------------------------------------------------
     | Extensions
