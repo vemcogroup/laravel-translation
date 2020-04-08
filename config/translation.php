@@ -35,7 +35,7 @@ return [
     |
     */
 	
-    'excluded_directories' => ['vendor', 'storage', 'public'],
+    'excluded_directories' => ['vendor', 'storage', 'public', 'node_modules'],
 	
     /*
     |--------------------------------------------------------------------------
