@@ -119,8 +119,8 @@ class Translation
             ], 'POST');
 
             $content = collect($this->query($response['result']['url']))
-                ->map(function ($entry) {
-                    return trim($entry);
+                ->mapWithKeys(function ($entry, $key) {
+                    return is_array($entry) ? [trim(array_key_first($entry)) => array_pop($entry)] : [$key => trim($entry)];
                 })
                 ->sortKeys()
                 ->toJson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
