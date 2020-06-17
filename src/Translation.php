@@ -63,11 +63,11 @@ class Translation
         $collapsedKeys = collect($allMatches)->collapse();
         $keys = $collapsedKeys->combine($collapsedKeys);
 
-        if($mergeKeys) {
+        if ($mergeKeys) {
             $content = $this->getFileContent();
             $keys = $content->union(
-                $keys->filter(function($key) use ($content) {
-                    return ! $content->has($key);
+                $keys->filter(function ($key) use ($content) {
+                    return !$content->has($key);
                 })
             );
         }
@@ -131,7 +131,7 @@ class Translation
         return $languages->pluck('code');
     }
 
-    public function upload(): void
+    public function syncTerms(): void
     {
         try {
             $this->setupPoeditorCredentials();
@@ -153,6 +153,44 @@ class Translation
         }
     }
 
+    public function syncTranslations(?array $languages = null): void
+    {
+        if ($languages === null) {
+            $translations = $this->getTranslations();
+        } else {
+            $translations = $this->getTranslations($languages);
+        }
+
+        $this->setupPoeditorCredentials();
+
+        foreach ($translations as $language => $entries) {
+            try {
+                $json = collect($entries)
+                    ->mapToGroups(function ($value, $key) {
+                        return [[
+                            'term' => $key,
+                            'translation' => [
+                                'content' => $value,
+                            ],
+                        ]];
+                    })
+                    ->first()
+                    ->toJson();
+
+                $this->query('https://api.poeditor.com/v2/translations/update', [
+                    'form_params' => [
+                        'api_token' => $this->apiKey,
+                        'id' => $this->projectId,
+                        'language' => $language,
+                        'data' => $json,
+                    ]
+                ], 'POST');
+            } catch (Exception $e) {
+                throw $e;
+            }
+        }
+    }
+
     protected function setupPoeditorCredentials(): void
     {
         if (!$this->apiKey = config('translation.api_key')) {
@@ -171,11 +209,17 @@ class Translation
             : collect();
     }
 
-    protected function getTranslations(): Collection
+    protected function getTranslations(?array $languages = null): Collection
     {
+        $namePattern = '*.json';
+
+        if ($languages !== null) {
+            $namePattern = '/(' . implode('|', $languages) . ').json/';
+        }
+
         return collect(app(Finder::class)
             ->in(app()->langPath())
-            ->name('*.json')
+            ->name($namePattern)
             ->files())
             ->mapWithKeys(function (SplFileInfo $file) {
                 return [$file->getBaseName('.json') => json_decode($file->getContents(), true)];

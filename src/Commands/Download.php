@@ -14,11 +14,11 @@ class Download extends Command
     public function handle(): void
     {
         try {
-            $this->info('⬇️ Preparing to download languages');
+            $this->info('⬇️  Preparing to download languages');
 
             $languages = app(Translation::class)->download();
 
-            $this->info('⬇️ Finished downloading languages: ' . $languages->implode(', '));
+            $this->info('⬇️  Finished downloading languages: ' . $languages->implode(', '));
         } catch (Exception $e) {
             $this->error($e->getMessage());
         }
