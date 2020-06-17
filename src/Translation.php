@@ -155,11 +155,7 @@ class Translation
 
     public function syncTranslations(?array $languages = null): void
     {
-        if ($languages === null) {
-            $translations = $this->getTranslations();
-        } else {
-            $translations = $this->getTranslations($languages);
-        }
+        $translations = $this->getTranslations($languages);
 
         $this->setupPoeditorCredentials();
 
