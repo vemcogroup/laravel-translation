@@ -124,6 +124,12 @@ To upload your translation terms to poeditor run this command:
 php artisan translation:upload {--scan : Whether the job should scan before uploading}
 ```
 
+You are also able to upload your local translations if you have locale changes
+```bash
+php artisan translation:upload {--translations=all : Upload translations for language sv,da,...}
+```
+
+
 **Download translation languages**
 
 To download languages from poeditor run this command:
