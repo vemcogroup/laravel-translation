@@ -155,14 +155,13 @@ class Translation
 
     public function syncTranslations(?array $languages = null): void
     {
-        $translations = $this->getTranslations($languages);
+        try {
+            $this->setupPoeditorCredentials();
+            $translations = $this->getTranslations($languages);
 
-        $this->setupPoeditorCredentials();
-
-        foreach ($translations as $language => $entries) {
-            try {
+            foreach ($translations as $language => $entries) {
                 $json = collect($entries)
-                    ->mapToGroups(function ($value, $key) {
+                    ->mapToGroups(static function ($value, $key) {
                         return [[
                             'term' => $key,
                             'translation' => [
@@ -181,9 +180,9 @@ class Translation
                         'data' => $json,
                     ]
                 ], 'POST');
-            } catch (Exception $e) {
-                throw $e;
             }
+        } catch (Exception $e) {
+            throw $e;
         }
     }
 

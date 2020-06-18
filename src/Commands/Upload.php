@@ -10,7 +10,7 @@ class Upload extends Command
 {
     protected $signature = 'translation:upload
                             {--scan : Whether the job should scan before uploading}
-                            {--translations-for-language=all : Upload translations for language sv,da,...}
+                            {--translations=all : Upload translations for language sv,da,...}
                             ';
 
     protected $description = 'Upload all translations to POEditor';
@@ -26,8 +26,8 @@ class Upload extends Command
 
             app(Translation::class)->syncTerms();
 
-            if ($this->hasOption('translations-for-language')) {
-                $language = $this->option('translations-for-language') === null ? null : explode(',', $this->option('translations-for-language'));
+            if ($this->hasOption('translations')) {
+                $language = in_array($this->option('translations'), [null, 'all'], true) ? null : explode(',', $this->option('translations'));
                 app(Translation::class)->syncTranslations($language);
             }
 
