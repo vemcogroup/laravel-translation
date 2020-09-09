@@ -18,7 +18,7 @@
         }
     ],
     "require": {
-        "php": "^7.2",
+        "php": "^7.3",
         "ext-json": "*",
         "symfony/finder": "^4.3|^5.0",
         "guzzlehttp/guzzle": "^6.3",
