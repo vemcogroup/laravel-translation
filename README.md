@@ -117,6 +117,15 @@ php artisan translation:scan {--merge : Whether the job should overwrite or merg
 
 The command creates your `base_language` .json file in `/resources/lang`
 
+**Add terms**
+
+To only add your terms run this command:
+```bash
+php artisan translation:add-terms {--scan : Whether the job should scan before uploading}
+```
+This command doesn't remove unsused terms, so remember *NOT* to run `upload` command afterward. 
+
+
 **Upload translations**
 
 To upload your translation terms to poeditor run this command:

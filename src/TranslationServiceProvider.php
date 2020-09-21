@@ -7,6 +7,7 @@ use Vemcogroup\Translation\Commands\Scan;
 use Vemcogroup\Translation\Commands\Upload;
 use Vemcogroup\Translation\Commands\Download;
 use Vemcogroup\Translation\Commands\CreateJs;
+use Vemcogroup\Translation\Commands\AddTerms;
 
 class TranslationServiceProvider extends ServiceProvider
 {
@@ -22,6 +23,7 @@ class TranslationServiceProvider extends ServiceProvider
                 Upload::class,
                 Download::class,
                 CreateJs::class,
+                AddTerms::class,
             ]);
         }
     }

@@ -153,6 +153,28 @@ class Translation
         }
     }
 
+    public function addTerms(): void
+    {
+        try {
+            $this->setupPoeditorCredentials();
+            $entries = $this->getFileContent()
+                ->map(function ($value, $key) {
+                    return ['term' => $key];
+                })
+                ->toJson();
+
+            $this->query('https://api.poeditor.com/v2/terms/add', [
+                'form_params' => [
+                    'api_token' => $this->apiKey,
+                    'id' => $this->projectId,
+                    'data' => $entries,
+                ]
+            ], 'POST');
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+
     public function syncTranslations(?array $languages = null): void
     {
         try {
