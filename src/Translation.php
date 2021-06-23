@@ -33,7 +33,9 @@ class Translation
         $finder->in(base_path())
             ->exclude(config('translation.excluded_directories'))
             ->name(config('translation.extensions'))
+            ->followLinks()
             ->files();
+
         /*
          * This pattern is derived from Barryvdh\TranslationManager by Barry vd. Heuvel <barryvdh@gmail.com>
          *
