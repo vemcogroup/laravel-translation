@@ -76,7 +76,7 @@ class Translation
             );
         }
 
-        file_put_contents($this->baseFilename, json_encode($keys->sortKeys(), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        file_put_contents($this->baseFilename, json_encode($keys->sortKeys(), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
         return $keys->count();
     }
