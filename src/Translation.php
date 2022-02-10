@@ -11,6 +11,7 @@ use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\HttpFoundation\Response;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
 use Vemcogroup\Translation\Exceptions\POEditorException;
+use const DIRECTORY_SEPARATOR;
 
 class Translation
 {
@@ -91,7 +92,7 @@ class Translation
         $translations = $this->getTranslations();
         $translations->each(function ($content, $language) use ($jsLangPath) {
             $content = 'window.i18n = ' . json_encode($content) . ';';
-            file_put_contents($jsLangPath . '/' . $language . '.js', $content);
+            file_put_contents($jsLangPath . DIRECTORY_SEPARATOR . $language . '.js', $content);
         });
 
         return $translations->count();
@@ -129,7 +130,7 @@ class Translation
                 ->sortKeys()
                 ->toJson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
-            file_put_contents(resource_path('lang/' . $language['code'] . '.json'), $content);
+            file_put_contents(app()->langPath() . DIRECTORY_SEPARATOR . $language['code'] . '.json', $content);
         });
 
         return $languages->pluck('code');

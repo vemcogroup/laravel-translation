@@ -20,7 +20,7 @@
     "require": {
         "php": "^7.3|^8.0",
         "ext-json": "*",
-        "symfony/finder": "^4.3|^5.0",
+        "symfony/finder": "^4.3|^5.0|^6.0",
         "guzzlehttp/guzzle": "^6.3|^7.0",
         "laravel/framework": "^6.0|^7.0|^8.0|^9.0"
     },
