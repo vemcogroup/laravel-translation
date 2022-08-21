@@ -47,21 +47,29 @@ class Translation
             // See https://regex101.com/r/jS5fX0/5
             '[^\w]' . // Must not start with any alphanum or _
             '(?<!->)' . // Must not start with ->
-            '(' . implode('|', $functions) . ')' . // Must start with one of the functions
+            '(?:' . implode('|', $functions) . ')' . // Must start with one of the functions
             "\(" . // Match opening parentheses
             "\s*" . // Allow whitespace chars after the opening parenthese
-            "[\'\"]" . // Match " or '
-            '(' . // Start a new group to match:
-            '.+' . // Must start with group
-            ')' . // Close group
-            "[\'\"]" . // Closing quote
+            '(?:' . // Non capturing group
+                "\'(.+)\'" . // Match 'text'
+            '|' . // or
+                "\"(.+)\"" . // Match "text"
+            ')' . // Close non-capturing group 
             "\s*" . // Allow whitespace chars before the closing parenthese
             "[\),]"  // Close parentheses or new parameter
         ;
 
         foreach ($finder as $file) {
             if (preg_match_all("/$pattern/siU", $file->getContents(), $matches)) {
-                $allMatches[$file->getRelativePathname()] = $matches[2];
+                // $matches[1] are single quotes, [2] double quotes
+                // Need to merge and filter out null or blank entries
+                $allMatches[$file->getRelativePathname()] = 
+                    array_filter(
+                        array_merge($matches[1], $matches[2]),
+                        function ($value) {
+                            return (!is_null($value)) || $value !== "";
+                        }
+                    );
             }
         }
 
