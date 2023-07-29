@@ -11,6 +11,7 @@ use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\HttpFoundation\Response;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
 use Vemcogroup\Translation\Exceptions\POEditorException;
+
 use const DIRECTORY_SEPARATOR;
 
 class Translation
@@ -84,7 +85,7 @@ class Translation
 
     public function createJs(): int
     {
-        $jsLangPath = public_path('build/lang');
+        $jsLangPath = public_path(config('output_directory', 'build/lang'));
         if (!is_dir($jsLangPath) && !mkdir($jsLangPath, 0777, true)) {
             throw POEditorException::unableToCreateJsDirectory($jsLangPath);
         }
