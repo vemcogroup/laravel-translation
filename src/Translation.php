@@ -49,13 +49,13 @@ class Translation
             '(?<!->)' . // Must not start with ->
             '(' . implode('|', $functions) . ')' . // Must start with one of the functions
             "\(" . // Match opening parentheses
-            "\s*" . // Allow whitespace chars after the opening parenthese
+            "\s*" . // Allow whitespace chars after the opening parenthesis
             "['`\"]" . // Match ", ' or `
             '(' . // Start a new group to match:
             '.+' . // Must start with group
             ')' . // Close group
             "['`\"]" . // Closing quote
-            "\s*" . // Allow whitespace chars before the closing parenthese
+            "\s*" . // Allow whitespace chars before the closing parenthesis
             "[\),]"  // Close parentheses or new parameter
         ;
 
