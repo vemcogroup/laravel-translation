@@ -46,7 +46,7 @@ return [
     |
     */
 
-    'output_directory' => public_path(env('TRANSLATION_OUTPUT_DIRECTORY', 'build/lang'));
+    'output_directory' => public_path(env('TRANSLATION_OUTPUT_DIRECTORY', 'build/lang')),
 
     /*
     |--------------------------------------------------------------------------
