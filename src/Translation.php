@@ -69,7 +69,7 @@ class Translation
                     array_filter(
                         array_merge(...$matches),
                         function ($value) {
-                            return (!is_null($value)) || $value !== "";
+                            return (!is_null($value)) && !empty($value);
                         }
                     );
             }
