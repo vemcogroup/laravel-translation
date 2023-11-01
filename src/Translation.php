@@ -48,21 +48,30 @@ class Translation
             // See https://regex101.com/r/jS5fX0/5
             '[^\w]' . // Must not start with any alphanum or _
             '(?<!->)' . // Must not start with ->
-            '(' . implode('|', $functions) . ')' . // Must start with one of the functions
+            '(?:' . implode('|', $functions) . ')' . // Must start with one of the functions
             "\(" . // Match opening parentheses
-            "\s*" . // Allow whitespace chars after the opening parenthesis
-            "['`\"]" . // Match ", ' or `
-            '(' . // Start a new group to match:
-            '.+' . // Must start with group
-            ')' . // Close group
-            "['`\"]" . // Closing quote
-            "\s*" . // Allow whitespace chars before the closing parenthesis
+            "\s*" . // Allow whitespace chars after the opening parenthese
+            '(?:' . // Non capturing group
+            "'(.+)'" . // Match 'text'
+            '|' . // or
+            "`(.+)`" . // Match `text`
+            '|' . // or
+            "\"(.+)\"" . // Match "text"
+            ')' . // Close non-capturing group
+            "\s*" . // Allow whitespace chars before the closing parenthese
             "[\),]"  // Close parentheses or new parameter
         ;
 
         foreach ($finder as $file) {
             if (preg_match_all("/$pattern/siU", $file->getContents(), $matches)) {
-                $allMatches[$file->getRelativePathname()] = $matches[2];
+                unset($matches[0]);
+                $allMatches[$file->getRelativePathname()] =
+                    array_filter(
+                        array_merge(...$matches),
+                        function ($value) {
+                            return (!is_null($value)) || $value !== "";
+                        }
+                    );
             }
         }
 
