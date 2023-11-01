@@ -50,11 +50,11 @@ class Translation
             '(' . implode('|', $functions) . ')' . // Must start with one of the functions
             "\(" . // Match opening parentheses
             "\s*" . // Allow whitespace chars after the opening parenthese
-            "[\'\"]" . // Match " or '
+            "['`\"]" . // Match ", ' or `
             '(' . // Start a new group to match:
             '.+' . // Must start with group
             ')' . // Close group
-            "[\'\"]" . // Closing quote
+            "['`\"]" . // Closing quote
             "\s*" . // Allow whitespace chars before the closing parenthese
             "[\),]"  // Close parentheses or new parameter
         ;
