@@ -30,13 +30,24 @@ return [
     |--------------------------------------------------------------------------
     | Excluded directories
     |--------------------------------------------------------------------------
-    | 
+    |
     | Here you define which directories are excluded from scan.
     |
     */
-	
+
     'excluded_directories' => ['vendor', 'storage', 'public', 'node_modules'],
-	
+
+    /*
+    |--------------------------------------------------------------------------
+    | Output directory
+    |--------------------------------------------------------------------------
+    |
+    | Here you define which directory to write the created JSON files into.
+    |
+    */
+
+    'output_directory' => public_path(env('TRANSLATION_OUTPUT_DIRECTORY', 'build/lang'));
+
     /*
     |--------------------------------------------------------------------------
     | Extensions
