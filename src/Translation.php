@@ -94,7 +94,7 @@ class Translation
 
     public function createJs(): int
     {
-        $jsLangPath = config('output_directory');
+        $jsLangPath = config('translation.output_directory');
         if (!is_dir($jsLangPath) && !mkdir($jsLangPath, 0777, true)) {
             throw POEditorException::unableToCreateJsDirectory($jsLangPath);
         }
